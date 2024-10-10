@@ -1,3 +1,9 @@
-import './style.css'
+import Movies from "./pages/Movies";
+import { NavBar } from "./components/navBar";
 
-const app = document.querySelector('#app')
+import "./style.css";
+
+const header = document.querySelector("header");
+header.append(NavBar());
+
+Movies();
