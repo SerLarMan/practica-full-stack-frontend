@@ -1,4 +1,5 @@
 import { post } from "../utils/http-functions";
+import Movies from "./Movies";
 
 const template = () => `
     <section id="register">
@@ -18,10 +19,11 @@ const registerSubmit = async () => {
 
   try {
     await post("users/register", { name, email, password });
-    const user = await post("users/login", {email, password})
+    const user = await post("users/login", { email, password });
     localStorage.setItem("user", JSON.stringify(user));
 
-    alert(`Welcome ${res.user.name}`);
+    Movies();
+    alert(`Welcome ${user.user.name}`);
   } catch (error) {
     alert(error.message);
   }
