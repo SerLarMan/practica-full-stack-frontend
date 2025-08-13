@@ -1,13 +1,13 @@
 import { post } from "../utils/http-functions";
-import Movies from "./Movies";
+import Home from "./Home";
 
 const template = () => `
     <section id="register">
         <form>
-            <input type="text" placeholder="Username" id="username" />
+            <input type="text" placeholder="Nombre" id="username" />
             <input type="email" placeholder="Email" id="email" />
-            <input type="password" placeholder="Password" id="password" />
-            <button id="registerbtn">Sing up</button>
+            <input type="password" placeholder="Contraseña" id="password" />
+            <button id="registerbtn">Registrarse</button>
         </form>
     </section>
 `;
@@ -22,8 +22,8 @@ const registerSubmit = async () => {
     const user = await post("users/login", { email, password });
     localStorage.setItem("user", JSON.stringify(user));
 
-    Movies();
-    alert(`Welcome ${user.user.name}`);
+    window.location.href = "/";
+    alert(`Bienvenido ${user.user.name}`);
   } catch (error) {
     alert(error.message);
   }

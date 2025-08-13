@@ -1,12 +1,11 @@
 import { post } from "../utils/http-functions";
-import Movies from "./Movies";
 
 const template = () => `
     <section id="login">
         <form>
             <input type="email" placeholder="Email" id="email" />
-            <input type="password" placeholder="Password" id="password" />
-            <button id="loginbtn">Sing in</button>
+            <input type="password" placeholder="Contraseña" id="password" />
+            <button id="loginbtn">Iniciar Sesión</button>
         </form>
     </section>
 `;
@@ -19,8 +18,8 @@ const loginSubmit = async () => {
     const user = await post("users/login", { email, password });
     localStorage.setItem("user", JSON.stringify(user));
 
-    Movies();
-    alert(`Welcome ${user.user.name}`);
+    window.location.href = "/";
+    alert(`Bienvenido ${user.user.name}`);
   } catch (error) {
     alert(error.message);
   }

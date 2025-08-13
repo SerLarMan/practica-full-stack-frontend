@@ -1,126 +1,209 @@
-import Login from "../pages/Login";
 import Register from "../pages/Register";
-import Movies from "../pages/Movies";
-import MovieForm from "../pages/MovieForm";
-import Tickets from "../pages/Tickets";
+import Login from "../pages/Login";
+import Home from "../pages/Home";
 import { Link } from "./link";
+import { Button } from "./button";
 
 import { isAdmin, isUserLogged, currUser } from "../utils/user-functions";
 
 export function NavBar() {
-  const navbar = document.createElement("div");
-  navbar.classList.add(
+  console.log(currUser());
+
+  const container = document.createElement("div");
+  container.className = "container mx-auto px-4";
+
+  const nav = document.createElement("nav");
+  nav.className = "flex items-center justify-between h-16";
+
+  // Logo
+  const logoLink = document.createElement("button");
+  logoLink.addEventListener("click", () => {
+    Home();
+  });
+  logoLink.classList.add(
     "flex",
-    "justify-between",
     "items-center",
-    "px-4",
-    "py-4"
+    "space-x-2",
+    "text-purple-600",
+    "hover:text-purple-700",
+    "transition-colors"
   );
 
-  const title = document.createElement("h1");
-  title.textContent = "Cinema Paradiso";
-  title.classList.add("w-[33%]");
+  const logoIcon = document.createElement("i");
+  logoIcon.className = "fa-solid fa-music h-8 w-8";
 
-  const linksDiv = document.createElement("div");
-  linksDiv.classList.add("flex", "w-[33%]", "justify-center", "gap-4");
+  const logoText = document.createElement("span");
+  logoText.classList.add(
+    "text-xl",
+    "font-bold",
+    "bg-gradient-to-r",
+    "from-purple-600",
+    "to-pink-600",
+    "bg-clip-text",
+    "text-transparent"
+  );
+  logoText.textContent = "Título";
 
-  linksDiv.append(Link("Movies", () => Movies()));
-  if (isUserLogged()) {
-    linksDiv.append(Link("My Tickets", () => Tickets()));
+  logoLink.appendChild(logoIcon);
+  logoLink.appendChild(logoText);
 
-    if (isAdmin()) {
-      linksDiv.append(Link("Add film", () => MovieForm()));
-    }
+  // Menu (desktop)
+  const menu = document.createElement("div");
+  menu.className = "hidden md:flex items-center space-x-8";
+
+  menu.appendChild(Link("Conciertos", () => Home()));
+
+  const myTicketsLink = document.createElement("button");
+  myTicketsLink.addEventListener("click", () => {});
+  myTicketsLink.classList.add(
+    "text-gray-700",
+    "hover:text-purple-600",
+    "transition-colors",
+    "font-medium"
+  );
+  myTicketsLink.textContent = "Mis Entradas";
+  menu.appendChild(myTicketsLink);
+
+  if (isAdmin()) {
+    const adminLink = document.createElement("button");
+    adminLink.addEventListener("click", () => {});
+    adminLink.classList.add(
+      "text-gray-700",
+      "hover:text-purple-600",
+      "transition-colors",
+      "font-medium"
+    );
+    adminLink.textContent = "Panel Administrador";
+    menu.appendChild(adminLink);
   }
 
-  const buttonsDiv = document.createElement("div");
-  buttonsDiv.classList.add("flex", "w-[33%]", "justify-end", "gap-4");
+  // Right Section
+  const rightSection = document.createElement("div");
+  rightSection.className = "flex items-center space-x-4";
 
-  if (!isUserLogged()) {
-    const login = document.createElement("button");
-    login.classList.add(
-      "bg-transparent",
-      "hover:bg-blue-700",
-      "text-blue-700",
-      "font-semibold",
-      "hover:text-white",
-      "py-2",
-      "px-4",
-      "border",
-      "border-blue-500",
-      "hover:border-transparent",
-      "rounded"
-    );
-    login.textContent = "Sing in";
-    login.addEventListener("click", () => Login());
-    buttonsDiv.append(login);
+  if (isUserLogged()) {
+    // User Dropdown Menu
+    const dropdownWrapper = document.createElement("div");
+    dropdownWrapper.className = "relative";
 
-    const register = document.createElement("button");
-    register.classList.add(
-      "bg-blue-500",
-      "hover:bg-blue-700",
-      "text-white",
-      "font-bold",
-      "py-2",
-      "px-4",
-      "border",
-      "border-transparent",
-      "rounded"
+    const dropdownBtn = document.createElement("button");
+    dropdownBtn.classList.add(
+      "flex",
+      "items-center",
+      "space-x-2",
+      "text-gray-700",
+      "hover:text-purple-600",
+      "transition-colors",
+      "font-medium"
     );
-    register.textContent = "Sing up";
-    register.addEventListener("click", () => Register());
-    buttonsDiv.append(register);
-  } else {
-    const userName = document.createElement("div");
-    userName.classList.add(
-      "border",
-      "border-gray-300",
-      "px-5",
-      "py-2",
-      "rounded",
-      "cursor-pointer",
-      "font-bold",
-      "w-[200px",
-      "shadow-sm"
-    );
-    userName.addEventListener("click", () => toggleDropDown());
-    userName.textContent = currUser().name;
+    dropdownBtn.innerHTML = `<i class="fa-solid fa-user h-4 w-4"></i><span class="hidden md:inline">${
+      currUser().name
+    }</span>`;
 
-    const userActionsMenu = document.createElement("div");
-    userActionsMenu.id = "dropDownMenu";
-    userActionsMenu.classList.add(
-      "rounded",
-      "border",
-      "border-gray-300",
+    const dropdownMenu = document.createElement("div");
+    dropdownMenu.classList.add(
+      "hidden",
       "absolute",
-      "top-[65px]",
-      "w-[175px]",
-      "shadow-sm",
-      "hidden"
+      "right-0",
+      "mt-2",
+      "w-48",
+      "bg-white",
+      "rounded",
+      "shadow-lg",
+      "py-2",
+      "z-50"
     );
 
-    const userAction = document.createElement("div");
-    userAction.classList.add("cursor-pointer", "hover:bg-gray-300", "p-4");
-    userAction.textContent = "Sign out";
-    userAction.addEventListener("click", () => {
-      localStorage.removeItem("user");
+    // Profile
+    const profileLink = document.createElement("a");
+    profileLink.href = "/user-management";
+    profileLink.className =
+      "flex items-center space-x-2 px-4 py-2 hover:bg-gray-100";
+    profileLink.innerHTML = `<i class="fa-solid fa-gear h-4 w-4"></i><span>Configuración</span>`;
+    dropdownMenu.appendChild(profileLink);
 
-      Movies();
-      alert("Sign out");
+    // Tickets (mobile)
+    const ticketsLink = document.createElement("a");
+    ticketsLink.href = "/my-tickets";
+    ticketsLink.classList.add(
+      "flex",
+      "items-center",
+      "space-x-2",
+      "px-4",
+      "py-2",
+      "hover:bg-gray-100",
+      "md:hidden"
+    );
+    ticketsLink.innerHTML = `<i class="fa-solid fa-ticket h-4 w-4"></i><span>My Tickets</span>`;
+    dropdownMenu.appendChild(ticketsLink);
+
+    // Admin (mobile)
+    if (isAdmin()) {
+      const adminMobileLink = document.createElement("a");
+      adminMobileLink.href = "/admin";
+      adminMobileLink.classList.add(
+        "flex",
+        "items-center",
+        "space-x-2",
+        "px-4",
+        "py-2",
+        "hover:bg-gray-100",
+        "md:hidden"
+      );
+      adminMobileLink.innerHTML = `<i class="fa-solid fa-calendar h-4 w-4"></i><span>Admin Dashboard</span>`;
+      dropdownMenu.appendChild(adminMobileLink);
+    }
+
+    // Log Out
+    const logoutBtn = document.createElement("button");
+    logoutBtn.classList.add(
+      "flex",
+      "items-center",
+      "space-x-2",
+      "px-4",
+      "py-2",
+      "text-red-600",
+      "hover:bg-gray-100",
+      "w-full",
+      "text-left"
+    );
+    logoutBtn.innerHTML = `<i class="fa-solid fa-right-from-bracket h-4 w-4"></i><span>Cerrar Sesión</span>`;
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    });
+    dropdownMenu.appendChild(logoutBtn);
+
+    dropdownWrapper.appendChild(dropdownBtn);
+    dropdownWrapper.appendChild(dropdownMenu);
+
+    // Toggle menu
+    dropdownBtn.addEventListener("click", () => {
+      dropdownMenu.classList.toggle("hidden");
     });
 
-    userActionsMenu.append(userAction);
-    buttonsDiv.append(userName);
-    buttonsDiv.append(userActionsMenu);
+    rightSection.appendChild(dropdownWrapper);
+  } else {
+    // Sign In / Sign Up
+    const signInBtn = document.createElement("button");
+    signInBtn.classList.add(
+      "px-3",
+      "py-2",
+      "rounded",
+      "hover:bg-gray-100",
+      "transition-colors"
+    );
+    signInBtn.textContent = "Iniciar Sesión";
+    signInBtn.addEventListener("click", () => Login());
+
+    rightSection.appendChild(signInBtn);
+    rightSection.appendChild(Button("Registrarse", null, () => Register()));
   }
+  nav.appendChild(logoLink);
+  nav.appendChild(menu);
+  nav.appendChild(rightSection);
+  container.appendChild(nav);
 
-  navbar.append(title);
-  navbar.append(linksDiv);
-  navbar.append(buttonsDiv);
-  return navbar;
-}
-
-function toggleDropDown() {
-  const dropdown = document.querySelector("#dropDownMenu");
-  dropdown.classList.toggle("hidden");
+  return container;
 }
