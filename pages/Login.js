@@ -26,7 +26,18 @@ const loginSubmit = async () => {
   const email = document.querySelector("#email").value;
   const password = document.querySelector("#password").value;
 
+  const button = document.querySelector("#login-button");
+  const originalText = button.innerHTML;
+
   try {
+    button.disabled = true;
+    button.innerHTML = `
+      <div class="flex items-center justify-center space-x-2">
+        <div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+        <span>Iniciando...</span>
+      </div>
+    `;
+
     const user = await post("users/login", { email, password });
     localStorage.setItem(
       "user",
@@ -40,6 +51,9 @@ const loginSubmit = async () => {
     alert(`Bienvenido ${user.user.name}`);
   } catch (error) {
     alert(error.message);
+  } finally {
+    button.disabled = false;
+    button.innerHTML = originalText;
   }
 };
 
@@ -50,6 +64,7 @@ const Login = () => {
   form.prepend(
     Button(
       "Iniciar Sesión",
+      "login-button",
       null,
       (e) => {
         e.preventDefault();

@@ -1,31 +1,50 @@
 import { get } from "../utils/http-functions";
 import { ScheduleCard } from "../components/scheduleCard";
+import { Loader } from "../components/loader";
 
 const template = () => `
     <div class="container mx-auto px-4 py-8">
       <section id="hero" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12"></section>
       <section class="mb-12">
         <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Fechas Disponibles</h2>
-        <div id="schedulesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+        <div id="schedulesGrid"></div>
       </section>
     </div>
 `;
 
 const getSchedules = async (concertId) => {
-  const schedules = await get(`schedules/${concertId}`);
   const schedulesContainer = document.querySelector("#schedulesGrid");
+  schedulesContainer.innerHTML = "";
+  schedulesContainer.append(Loader());
 
-  if (schedules && schedules.length > 0) {
-    schedules.forEach((schedule) => {
-      schedulesContainer.append(ScheduleCard(schedule));
-    });
-  } else {
-    const noSchedulesMessage = document.createElement("p");
-    schedulesContainer.classList.remove("grid", "md:grid-cols-2", "gap-6");
-    noSchedulesMessage.className = "text-gray-500 text-center";
-    noSchedulesMessage.textContent =
-      "No hay fechas disponibles para este concierto.";
-    schedulesContainer.append(noSchedulesMessage);
+  try {
+    const schedules = await get(`schedules/${concertId}`);
+
+    schedulesContainer.innerHTML = "";
+    schedulesContainer.classList.add(
+      "grid",
+      "grid-cols-1",
+      "md:grid-cols-2",
+      "gap-6"
+    );
+
+    if (schedules && schedules.length > 0) {
+      schedules.forEach((schedule) => {
+        schedulesContainer.append(ScheduleCard(schedule));
+      });
+    } else {
+      const noSchedulesMessage = document.createElement("p");
+      schedulesContainer.classList.remove("grid", "md:grid-cols-2", "gap-6");
+      noSchedulesMessage.className = "text-gray-500 text-center";
+      noSchedulesMessage.textContent =
+        "No hay fechas disponibles para este concierto.";
+      schedulesContainer.append(noSchedulesMessage);
+    }
+  } catch (error) {
+    console.log(error.message);
+    concertsContainer.innerHTML = `
+      <p class="text-center text-red-500 col-span-full">Error al cargar fechas</p>
+    `;
   }
 };
 

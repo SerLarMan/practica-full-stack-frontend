@@ -172,7 +172,7 @@ export function NavBar() {
     signInBtn.addEventListener("click", () => Login());
 
     rightSection.append(signInBtn);
-    rightSection.append(Button("Registrarse", null, () => Register()));
+    rightSection.append(Button("Registrarse", null, null, () => Register()));
   }
   nav.append(logoLink);
   nav.append(menu);

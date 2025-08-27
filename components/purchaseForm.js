@@ -68,15 +68,34 @@ const template = (schedule, ticketQuantity) => `
 `;
 
 const purchaseTicket = async (schedule, ticketQuantity) => {
+  const button = document.querySelector("#purchase-button");
+  const originalText = button.innerHTML;
+
+  const tickets = [];
   for (let i = 0; i < ticketQuantity; i++) {
     try {
-      await post(`tickets/${currUser()._id}`, schedule, TOKEN());
-      alert("Ticket comprado");
+      button.disabled = true;
+      button.innerHTML = `
+      <div class="flex items-center justify-center space-x-2">
+        <div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+        <span>Comprando...</span>
+      </div>
+      `;
+
+      const ticket = await post(`tickets/${currUser()._id}`, schedule, TOKEN());
+      tickets.push(ticket);
       ConcertInfo(schedule.concert);
     } catch (error) {
       console.log(error);
       alert("Error al realizar la compra");
+    } finally {
+      button.disabled = false;
+      button.innerHTML = originalText;
     }
+  }
+
+  if (tickets.length > 0) {
+    alert("Compra realizada con éxito");
   }
 };
 
@@ -102,6 +121,7 @@ export function purchaseForm(schedule) {
   actions.append(
     Button(
       "Confirmar Compra",
+      "purchase-button",
       null,
       () => {
         dialog.classList.add("hidden");

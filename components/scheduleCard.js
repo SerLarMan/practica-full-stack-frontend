@@ -91,7 +91,7 @@ export function ScheduleCard(schedule) {
   ticketsInfo.className = "text-sm text-gray-600";
   ticketsInfo.textContent = `${schedule.availableCapacity} entradas disponibles`;
 
-  const buyButton = Button("Comprar Entradas", "fa-solid fa-ticket", () => {
+  const buyButton = Button("Comprar Entradas", null, "fa-solid fa-ticket", () => {
     if (isUserLogged()) {
       purchaseForm(schedule);
     } else {

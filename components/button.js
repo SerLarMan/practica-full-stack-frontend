@@ -1,5 +1,6 @@
-export function Button(text, icon, clickEvent, classes) {
+export function Button(text, id, icon, clickEvent, classes) {
   const button = document.createElement("button");
+  button.id = id;
   button.classList.add(
     "px-4",
     "py-2",
@@ -18,14 +19,14 @@ export function Button(text, icon, clickEvent, classes) {
     "disabled:cursor-not-allowed"
   );
 
-  if(classes) {
+  if (classes) {
     button.classList.add(classes);
   }
 
   button.addEventListener("click", clickEvent);
   button.textContent = text;
 
-  if(icon) {
+  if (icon) {
     const iconElement = document.createElement("i");
     iconElement.className = icon;
     iconElement.classList.add("mr-2", "h-4", "w-4");

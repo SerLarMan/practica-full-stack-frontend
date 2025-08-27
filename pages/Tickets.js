@@ -1,9 +1,10 @@
+import { Loader } from "../components/loader";
 import { ticketCard } from "../components/ticketCard";
 import { get } from "../utils/http-functions";
 import { currUser, TOKEN } from "../utils/user-functions";
 
 const template = () => `
-    <section id="tickets" class="container mx-auto px-4 py-8 space-y-8 max-w-4xl">
+    <section id="tickets" class="container mx-auto px-4 py-8 space-y-8">
         <h2 class="mt-6 text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
           Mis Entradas
         </h2>
@@ -13,71 +14,91 @@ const template = () => `
 `;
 
 const getTickets = async () => {
-  const tickets = await get(`tickets/${currUser()._id}`, TOKEN());
+  const ticketsContainer = document.getElementById("tickets");
+  const activeTicketsContainer = document.getElementById("active-tickets");
+  const usedTicketsContainer = document.getElementById("used-tickets");
 
-  const activeTickets = tickets.filter((ticket) => ticket.status === "active");
-  const usedTickets = tickets.filter((ticket) => ticket.status === "used");
+  activeTicketsContainer.innerHTML = "";
+  usedTicketsContainer.innerHTML = "";
 
-  if (activeTickets?.length > 0) {
-    const activeTicketsContainer = document.getElementById("active-tickets");
-    const p = document.createElement("p");
-    p.textContent = `Entradas Activas (${activeTickets.length})`;
-    p.classList.add(
-      "text-2xl",
-      "font-bold",
-      "text-gray-800",
-      "mb-6",
-      "flex",
-      "items-center"
+  activeTicketsContainer.append(Loader());
+
+  try {
+    const tickets = await get(`tickets/${currUser()._id}`, TOKEN());
+
+     activeTicketsContainer.innerHTML = "";
+
+    const activeTickets = tickets.filter(
+      (ticket) => ticket.status === "active"
     );
+    const usedTickets = tickets.filter((ticket) => ticket.status === "used");
 
-    activeTicketsContainer.appendChild(p);
-    const ticketsWrapper = document.createElement("div");
-    ticketsWrapper.classList.add(
-      "grid",
-      "grid-cols-1",
-      "lg:grid-cols-2",
-      "gap-6"
-    );
-    activeTickets.forEach((ticket) => {
-      ticketsWrapper.appendChild(ticketCard(ticket));
-      activeTicketsContainer.appendChild(ticketsWrapper);
-    });
-  }
+    if (activeTickets?.length > 0) {
+      const activeTicketsContainer = document.getElementById("active-tickets");
+      const p = document.createElement("p");
+      p.textContent = `Entradas Activas (${activeTickets.length})`;
+      p.classList.add(
+        "text-2xl",
+        "font-bold",
+        "text-gray-800",
+        "mb-6",
+        "flex",
+        "items-center"
+      );
 
-  if (usedTickets?.length > 0) {
-    const usedTicketsContainer = document.getElementById("used-tickets");
-    const p = document.createElement("p");
-    p.textContent = `Entradas Usadas (${usedTickets.length})`;
-    p.classList.add(
-      "text-2xl",
-      "font-bold",
-      "text-gray-800",
-      "mb-6",
-      "flex",
-      "items-center"
-    );
+      activeTicketsContainer.appendChild(p);
+      const ticketsWrapper = document.createElement("div");
+      ticketsWrapper.classList.add(
+        "grid",
+        "grid-cols-1",
+        "lg:grid-cols-3",
+        "gap-6"
+      );
+      activeTickets.forEach((ticket) => {
+        ticketsWrapper.appendChild(ticketCard(ticket));
+        activeTicketsContainer.appendChild(ticketsWrapper);
+      });
+    }
 
-    usedTicketsContainer.appendChild(p);
-    const ticketsWrapper = document.createElement("div");
-    ticketsWrapper.classList.add(
-      "grid",
-      "grid-cols-1",
-      "lg:grid-cols-2",
-      "gap-6"
-    );
-    usedTickets.forEach((ticket) => {
-      ticketsWrapper.appendChild(ticketCard(ticket));
-      usedTicketsContainer.appendChild(ticketsWrapper);
-    });
-  }
+    if (usedTickets?.length > 0) {
+      const usedTicketsContainer = document.getElementById("used-tickets");
+      const p = document.createElement("p");
+      p.textContent = `Entradas Usadas (${usedTickets.length})`;
+      p.classList.add(
+        "text-2xl",
+        "font-bold",
+        "text-gray-800",
+        "mb-6",
+        "flex",
+        "items-center"
+      );
 
-  if (tickets.length === 0) {
-    const ticketsContainer = document.getElementById("tickets");
-    const p = document.createElement("p");
-    p.textContent = "No tienes entradas compradas actualmente";
-    p.classList.add("text-gray-500", "text-center", "mt-6");
-    ticketsContainer.appendChild(p);
+      usedTicketsContainer.appendChild(p);
+      const ticketsWrapper = document.createElement("div");
+      ticketsWrapper.classList.add(
+        "grid",
+        "grid-cols-1",
+        "lg:grid-cols-3",
+        "gap-6"
+      );
+      usedTickets.forEach((ticket) => {
+        ticketsWrapper.appendChild(ticketCard(ticket));
+        usedTicketsContainer.appendChild(ticketsWrapper);
+      });
+    }
+
+    if (tickets.length === 0) {
+      const ticketsContainer = document.getElementById("tickets");
+      const p = document.createElement("p");
+      p.textContent = "No tienes entradas compradas actualmente";
+      p.classList.add("text-gray-500", "mt-6");
+      ticketsContainer.appendChild(p);
+    }
+  } catch (error) {
+    ticketsContainer.innerHTML = `
+      <p class="text-red-500 mt-6">Error al cargar las entradas</p>
+    `;
+    console.log(error.message);
   }
 };
 

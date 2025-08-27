@@ -17,7 +17,18 @@ const updateProfile = async () => {
   const email = document.querySelector("#email").value;
   const image = document.querySelector("#profileImage").files[0];
 
+  const button = document.querySelector("#save-button");
+  const originalText = button.innerHTML;
+
   try {
+    button.disabled = true;
+    button.innerHTML = `
+      <div class="flex items-center justify-center space-x-2">
+        <div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+        <span>Guardando...</span>
+      </div>
+    `;
+
     const formData = new FormData();
     name != "" && formData.append("name", name);
     email != "" && formData.append("email", email);
@@ -36,6 +47,9 @@ const updateProfile = async () => {
     alert("Perfil actualizado correctamente");
   } catch (error) {
     alert(error.message);
+  } finally {
+    button.disabled = false;
+    button.innerHTML = originalText;
   }
 };
 
@@ -130,7 +144,7 @@ const Settings = () => {
   );
 
   form.append(
-    Button("Guardar cambios", null, (e) => {
+    Button("Guardar cambios", "save-button", null, (e) => {
       e.preventDefault();
       updateProfile();
     })

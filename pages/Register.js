@@ -31,12 +31,23 @@ const registerSubmit = async () => {
   const confirmPassword = document.querySelector("#confirmPassword").value;
   const image = document.querySelector("#profileImage").files[0];
 
+  const button = document.querySelector("#register-button");
+  const originalText = button.innerHTML;
+
   if (password !== confirmPassword) {
     alert("Las contraseñas no coinciden");
     return;
   }
 
   try {
+    button.disabled = true;
+    button.innerHTML = `
+      <div class="flex items-center justify-center space-x-2">
+        <div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+        <span>Registrando...</span>
+      </div>
+    `;
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("email", email);
@@ -57,6 +68,9 @@ const registerSubmit = async () => {
     alert(`Bienvenido ${user.user.name}`);
   } catch (error) {
     alert(error.message);
+  } finally {
+    button.disabled = false;
+    button.innerHTML = originalText;
   }
 };
 
@@ -67,6 +81,7 @@ const Register = () => {
   form.prepend(
     Button(
       "Registrarse",
+      "register-button",
       null,
       (e) => {
         e.preventDefault();

@@ -1,6 +1,7 @@
 import { get } from "../utils/http-functions";
 import { SearchBar } from "../components/searchBar";
 import { ConcertCard } from "../components/concertCard";
+import { Loader } from "../components/loader";
 
 const template = () => `
     <div class="container mx-auto px-4 py-8">
@@ -13,24 +14,50 @@ const template = () => `
         </p>
       </section>
       <div id="searchBar" class="max-w-md mx-auto mb-12"></div>
-      <section id="concertsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <section id="concertsGrid">
         <h2 class="hidden"></h2
       </section>
     </div>
 `;
 
 const getConcerts = async (query) => {
-  let concerts;
-  if (query && query.trim() !== "") {
-    concerts = await get(`concerts/search/${query}`);
-  } else {
-    concerts = await get("concerts");
-  }
   const concertsContainer = document.querySelector("#concertsGrid");
   concertsContainer.innerHTML = "";
-  concerts.forEach((concert) => {
-    concertsContainer.append(ConcertCard(concert));
-  });
+  concertsContainer.append(Loader());
+
+  try {
+    let concerts;
+    if (query && query.trim() !== "") {
+      concerts = await get(`concerts/search/${query}`);
+    } else {
+      concerts = await get("concerts");
+    }
+
+    concertsContainer.innerHTML = "";
+    concertsContainer.classList.add(
+      "grid",
+      "grid-cols-1",
+      "md:grid-cols-2",
+      "lg:grid-cols-3",
+      "gap-8"
+    );
+
+    if (!concerts.length) {
+      concertsContainer.innerHTML = `
+        <p class="text-center text-gray-500 col-span-full">No se encontraron conciertos</p>
+      `;
+      return;
+    }
+
+    concerts.forEach((concert) => {
+      concertsContainer.append(ConcertCard(concert));
+    });
+  } catch (error) {
+    console.log(error.message);
+    concertsContainer.innerHTML = `
+      <p class="text-center text-red-500 col-span-full">Error al cargar conciertos</p>
+    `;
+  }
 };
 
 const Home = () => {
