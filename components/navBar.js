@@ -4,11 +4,11 @@ import Home from "../pages/Home";
 import { Link } from "./link";
 import { Button } from "./button";
 
-import { isAdmin, isUserLogged, currUser } from "../utils/user-functions";
+import { isUserLogged, currUser } from "../utils/user-functions";
+import Tickets from "../pages/Tickets";
+import Settings from "../pages/Setting";
 
 export function NavBar() {
-  console.log(currUser());
-
   const container = document.createElement("div");
   container.className = "container mx-auto px-4";
 
@@ -29,9 +29,6 @@ export function NavBar() {
     "transition-colors"
   );
 
-  const logoIcon = document.createElement("i");
-  logoIcon.className = "fa-solid fa-music h-8 w-8";
-
   const logoText = document.createElement("span");
   logoText.classList.add(
     "text-xl",
@@ -42,39 +39,17 @@ export function NavBar() {
     "bg-clip-text",
     "text-transparent"
   );
-  logoText.textContent = "Título";
-
-  logoLink.appendChild(logoIcon);
-  logoLink.appendChild(logoText);
+  logoText.textContent = "SOUND-SYSTEM";
+  logoLink.append(logoText);
 
   // Menu (desktop)
   const menu = document.createElement("div");
   menu.className = "hidden md:flex items-center space-x-8";
 
-  menu.appendChild(Link("Conciertos", () => Home()));
+  menu.append(Link("Conciertos", () => Home()));
 
-  const myTicketsLink = document.createElement("button");
-  myTicketsLink.addEventListener("click", () => {});
-  myTicketsLink.classList.add(
-    "text-gray-700",
-    "hover:text-purple-600",
-    "transition-colors",
-    "font-medium"
-  );
-  myTicketsLink.textContent = "Mis Entradas";
-  menu.appendChild(myTicketsLink);
-
-  if (isAdmin()) {
-    const adminLink = document.createElement("button");
-    adminLink.addEventListener("click", () => {});
-    adminLink.classList.add(
-      "text-gray-700",
-      "hover:text-purple-600",
-      "transition-colors",
-      "font-medium"
-    );
-    adminLink.textContent = "Panel Administrador";
-    menu.appendChild(adminLink);
+  if (isUserLogged()) {
+    menu.append(Link("Mis Entradas", () => Tickets()));
   }
 
   // Right Section
@@ -96,7 +71,9 @@ export function NavBar() {
       "transition-colors",
       "font-medium"
     );
-    dropdownBtn.innerHTML = `<i class="fa-solid fa-user h-4 w-4"></i><span class="hidden md:inline">${
+    dropdownBtn.innerHTML = `<img src="${currUser().image}" alt="${
+      currUser().name
+    }" class="h-8 w-8 rounded-full object-cover border border-gray-200"><span class="md:inline">${
       currUser().name
     }</span>`;
 
@@ -114,17 +91,11 @@ export function NavBar() {
       "z-50"
     );
 
-    // Profile
-    const profileLink = document.createElement("a");
-    profileLink.href = "/user-management";
-    profileLink.className =
-      "flex items-center space-x-2 px-4 py-2 hover:bg-gray-100";
-    profileLink.innerHTML = `<i class="fa-solid fa-gear h-4 w-4"></i><span>Configuración</span>`;
-    dropdownMenu.appendChild(profileLink);
-
     // Tickets (mobile)
-    const ticketsLink = document.createElement("a");
-    ticketsLink.href = "/my-tickets";
+    const ticketsLink = document.createElement("button");
+    ticketsLink.addEventListener("click", () => {
+      Tickets();
+    });
     ticketsLink.classList.add(
       "flex",
       "items-center",
@@ -134,25 +105,28 @@ export function NavBar() {
       "hover:bg-gray-100",
       "md:hidden"
     );
-    ticketsLink.innerHTML = `<i class="fa-solid fa-ticket h-4 w-4"></i><span>My Tickets</span>`;
-    dropdownMenu.appendChild(ticketsLink);
+    ticketsLink.innerHTML = `<i class="fa-solid fa-ticket h-4 w-4"></i>${
+      Link("Mis Entradas", () => Tickets()).outerHTML
+    }`;
+    dropdownMenu.append(ticketsLink);
 
-    // Admin (mobile)
-    if (isAdmin()) {
-      const adminMobileLink = document.createElement("a");
-      adminMobileLink.href = "/admin";
-      adminMobileLink.classList.add(
-        "flex",
-        "items-center",
-        "space-x-2",
-        "px-4",
-        "py-2",
-        "hover:bg-gray-100",
-        "md:hidden"
-      );
-      adminMobileLink.innerHTML = `<i class="fa-solid fa-calendar h-4 w-4"></i><span>Admin Dashboard</span>`;
-      dropdownMenu.appendChild(adminMobileLink);
-    }
+    // Setting
+    const settingsBtn = document.createElement("button");
+    settingsBtn.classList.add(
+      "flex",
+      "items-center",
+      "space-x-2",
+      "px-4",
+      "py-2",
+      "hover:bg-gray-100",
+      "w-full",
+      "text-left"
+    );
+    settingsBtn.innerHTML = `<i class="fa-solid fa-gear h-4 w-4"></i><span>Configuración</span>`;
+    settingsBtn.addEventListener("click", () => {
+      Settings();
+    });
+    dropdownMenu.append(settingsBtn);
 
     // Log Out
     const logoutBtn = document.createElement("button");
@@ -173,17 +147,17 @@ export function NavBar() {
       localStorage.removeItem("user");
       window.location.href = "/";
     });
-    dropdownMenu.appendChild(logoutBtn);
+    dropdownMenu.append(logoutBtn);
 
-    dropdownWrapper.appendChild(dropdownBtn);
-    dropdownWrapper.appendChild(dropdownMenu);
+    dropdownWrapper.append(dropdownBtn);
+    dropdownWrapper.append(dropdownMenu);
 
     // Toggle menu
     dropdownBtn.addEventListener("click", () => {
       dropdownMenu.classList.toggle("hidden");
     });
 
-    rightSection.appendChild(dropdownWrapper);
+    rightSection.append(dropdownWrapper);
   } else {
     // Sign In / Sign Up
     const signInBtn = document.createElement("button");
@@ -197,13 +171,13 @@ export function NavBar() {
     signInBtn.textContent = "Iniciar Sesión";
     signInBtn.addEventListener("click", () => Login());
 
-    rightSection.appendChild(signInBtn);
-    rightSection.appendChild(Button("Registrarse", null, () => Register()));
+    rightSection.append(signInBtn);
+    rightSection.append(Button("Registrarse", null, () => Register()));
   }
-  nav.appendChild(logoLink);
-  nav.appendChild(menu);
-  nav.appendChild(rightSection);
-  container.appendChild(nav);
+  nav.append(logoLink);
+  nav.append(menu);
+  nav.append(rightSection);
+  container.append(nav);
 
   return container;
 }

@@ -1,4 +1,6 @@
+import { isUserLogged } from "../utils/user-functions";
 import { Button } from "./button";
+import { purchaseForm } from "./purchaseForm";
 
 export function ScheduleCard(schedule) {
   const container = document.createElement("article");
@@ -17,8 +19,11 @@ export function ScheduleCard(schedule) {
   const header = document.createElement("div");
   header.className = "flex items-center justify-between mb-4";
 
+  const dateTimeWrapper = document.createElement("div");
+  dateTimeWrapper.className = "flex items-center";
+
   const dateWrapper = document.createElement("div");
-  dateWrapper.className = "flex items-center space-x-3";
+  dateWrapper.className = "flex items-center space-x-2";
 
   const dateIcon = document.createElement("i");
   dateIcon.className = "fa-solid fa-calendar h-5 w-5 text-purple-600";
@@ -31,8 +36,18 @@ export function ScheduleCard(schedule) {
     day: "numeric",
   });
 
-  dateWrapper.appendChild(dateIcon);
-  dateWrapper.appendChild(dateText);
+  dateWrapper.append(dateIcon);
+  dateWrapper.append(dateText);
+
+  // Time
+  const timeWrapper = document.createElement("div");
+  timeWrapper.className = "flex items-center space-x-2";
+  timeWrapper.innerHTML = `
+    <span>, ${schedule.time}h</span>
+  `;
+
+  dateTimeWrapper.append(dateWrapper);
+  dateTimeWrapper.append(timeWrapper);
 
   const priceBadge = document.createElement("span");
   priceBadge.classList.add(
@@ -47,17 +62,11 @@ export function ScheduleCard(schedule) {
   );
   priceBadge.textContent = `$${schedule.price}`;
 
-  header.appendChild(dateWrapper);
-  header.appendChild(priceBadge);
-
+  header.append(dateTimeWrapper);
+  header.append(priceBadge);
   // --- Content ---
   const content = document.createElement("div");
   content.className = "space-y-4";
-
-  // Date
-  const timeRow = document.createElement("div");
-  timeRow.className = "flex items-center space-x-2 text-gray-600";
-  timeRow.innerHTML = `<i class="fa-solid fa-clock h-4 w-4"></i><span>${schedule.time}</span>`;
 
   // Location
   const locationWrapper = document.createElement("div");
@@ -72,6 +81,7 @@ export function ScheduleCard(schedule) {
       <p class="text-sm">${schedule.location.address}, ${schedule.location.city}</p>
     </div>
   `;
+  locationWrapper.append(venueRow);
 
   // --- Footer ---
   const footer = document.createElement("div");
@@ -79,20 +89,25 @@ export function ScheduleCard(schedule) {
 
   const ticketsInfo = document.createElement("span");
   ticketsInfo.className = "text-sm text-gray-600";
-  ticketsInfo.textContent = `${schedule.location.capacity} entradas disponibles`;
+  ticketsInfo.textContent = `${schedule.availableCapacity} entradas disponibles`;
 
-  const buyButton = Button("Comprar Entradas", "fa-solid fa-ticket", () => {});
-  buyButton.disabled = schedule.location.capacity === 0;
+  const buyButton = Button("Comprar Entradas", "fa-solid fa-ticket", () => {
+    if (isUserLogged()) {
+      purchaseForm(schedule);
+    } else {
+      alert("Por favor inicia sesión para comprar entradas");
+    }
+  });
+  buyButton.disabled = schedule.availableCapacity === 0;
 
-  footer.appendChild(ticketsInfo);
-  footer.appendChild(buyButton);
+  footer.append(ticketsInfo);
+  footer.append(buyButton);
 
-  content.appendChild(timeRow);
-  content.appendChild(locationWrapper);
-  content.appendChild(footer);
+  content.append(locationWrapper);
+  content.append(footer);
 
-  container.appendChild(header);
-  container.appendChild(content);
+  container.append(header);
+  container.append(content);
 
   return container;
 }

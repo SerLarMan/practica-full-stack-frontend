@@ -5,7 +5,7 @@ export function SearchBar() {
   const input = document.createElement("input");
   input.type = "text";
   input.placeholder = "Buscar por artista o concierto";
-  input.name = "search";
+  input.id = "search";
   input.classList.add(
     "pl-10",
     "h-12",
@@ -13,7 +13,8 @@ export function SearchBar() {
     "border-2",
     "border-purple-200",
     "focus:border-purple-400",
-    "rounded-full"
+    "rounded-full",
+    "w-full"
   );
 
   const icon = document.createElement("i");

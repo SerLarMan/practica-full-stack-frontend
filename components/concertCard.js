@@ -20,17 +20,17 @@ export function ConcertCard(concert) {
     "block"
   );
 
-  // --- Img ---
-  const imgWrapper = document.createElement("div");
-  imgWrapper.className = "relative overflow-hidden";
+  // --- Image ---
+  const imageWrapper = document.createElement("div");
+  imageWrapper.className = "relative overflow-hidden";
 
-  const img = document.createElement("img");
-  img.src = concert.image || "/placeholder.svg";
-  img.alt = concert.title;
-  img.width = 400;
-  img.height = 300;
-  img.loading = "lazy";
-  img.classList.add(
+  const image = document.createElement("img");
+  image.src = concert.image || "/placeholder.svg";
+  image.alt = concert.title;
+  image.width = 400;
+  image.height = 300;
+  image.loading = "lazy";
+  image.classList.add(
     "w-full",
     "h-48",
     "object-cover",
@@ -39,7 +39,7 @@ export function ConcertCard(concert) {
     "duration-300"
   );
 
-  imgWrapper.appendChild(img);
+  imageWrapper.append(image);
 
   // --- Content ---
   const content = document.createElement("div");
@@ -63,12 +63,12 @@ export function ConcertCard(concert) {
   const infoWrapper = document.createElement("div");
   infoWrapper.className = "flex items-center text-gray-600 text-sm space-x-4";
 
-  content.appendChild(title);
-  content.appendChild(artist);
-  content.appendChild(infoWrapper);
+  content.append(title);
+  content.append(artist);
+  content.append(infoWrapper);
 
-  container.appendChild(imgWrapper);
-  container.appendChild(content);
+  container.append(imageWrapper);
+  container.append(content);
 
   return container;
 }

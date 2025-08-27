@@ -19,11 +19,17 @@ const template = () => `
     </div>
 `;
 
-const getConcerts = async () => {
-  const concerts = await get("concerts");
+const getConcerts = async (query) => {
+  let concerts;
+  if (query && query.trim() !== "") {
+    concerts = await get(`concerts/search/${query}`);
+  } else {
+    concerts = await get("concerts");
+  }
   const concertsContainer = document.querySelector("#concertsGrid");
+  concertsContainer.innerHTML = "";
   concerts.forEach((concert) => {
-    concertsContainer.appendChild(ConcertCard(concert));
+    concertsContainer.append(ConcertCard(concert));
   });
 };
 
@@ -32,6 +38,11 @@ const Home = () => {
 
   const searchBar = document.querySelector("#searchBar");
   searchBar.append(SearchBar());
+
+  const searchInput = document.querySelector("#search");
+  searchInput.addEventListener("input", (e) => {
+    getConcerts(e.target.value);
+  });
 
   getConcerts();
 };
