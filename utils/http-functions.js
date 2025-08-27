@@ -1,4 +1,4 @@
-const URL = "http://localhost:3000/";
+const URL = import.meta.env.VITE_URL + ":" + import.meta.env.VITE_PORT + "/";
 
 export async function get(query, token = "") {
   const res = await fetch(URL + query, {
